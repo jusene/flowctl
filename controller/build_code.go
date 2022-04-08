@@ -1,12 +1,9 @@
 package controller
 
 import (
-	"bufio"
 	"fmt"
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"gitlab.hho-inc.com/devops/flowctl/utils"
-	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -50,77 +47,20 @@ func (h *HHOBuildCode) Build() {
 func (h *HHOBuildCode) buildJava() {
 	os.Chdir(h.workSpace)
 	cmd := exec.Command("mvn", "-B", "clean", "package", "-Dmaven.test.skip=true")
-	stdout, err := cmd.StdoutPipe()
-	cobra.CheckErr(err)
-	cmd.Start()
-
-	// 创建一个流来读取管道内的内容，一行一行读
-	reader := bufio.NewReader(stdout)
-
-	for {
-		// 以换行符作为一行结尾
-		line, err2 := reader.ReadString('\n')
-		if err2 != nil || io.EOF == err2 {
-			break
-		}
-		fmt.Print(line)
-	}
-	cmd.Wait()
+	utils.CmdStreamOut(cmd)
 }
 
 func (h *HHOBuildCode) buildNode() {
 	os.Chdir(h.workSpace)
 	cmd := exec.Command("npm", "install")
-	stdout, err := cmd.StdoutPipe()
-	cobra.CheckErr(err)
-	cmd.Start()
-
-	reader := bufio.NewReader(stdout)
-
-	for {
-		// 以换行符作为一行结尾
-		line, err := reader.ReadString('\n')
-		if err != nil || io.EOF == err {
-			break
-		}
-		fmt.Print(line)
-	}
-	cmd.Wait()
+	utils.CmdStreamOut(cmd)
 }
 
 func (h *HHOBuildCode) buildStatic() {
 	os.Chdir(h.workSpace)
 	cmd := exec.Command("npm", "install")
-	stdout, err := cmd.StdoutPipe()
-	cobra.CheckErr(err)
-	cmd.Start()
-
-	reader := bufio.NewReader(stdout)
-
-	for {
-		// 以换行符作为一行结尾
-		line, err := reader.ReadString('\n')
-		if err != nil || io.EOF == err {
-			break
-		}
-		fmt.Print(line)
-	}
-	cmd.Wait()
+	utils.CmdStreamOut(cmd)
 
 	cmd2 := exec.Command("npm", "run", "build")
-	stdout2, err := cmd2.StdoutPipe()
-	cobra.CheckErr(err)
-	cmd.Start()
-
-	reader2 := bufio.NewReader(stdout2)
-
-	for {
-		// 以换行符作为一行结尾
-		line, err := reader2.ReadString('\n')
-		if err != nil || io.EOF == err {
-			break
-		}
-		fmt.Print(line)
-	}
-	cmd.Wait()
+	utils.CmdStreamOut(cmd2)
 }

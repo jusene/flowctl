@@ -1,13 +1,11 @@
 package controller
 
 import (
-	"bufio"
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"gitlab.hho-inc.com/devops/flowctl/models"
 	"gitlab.hho-inc.com/devops/flowctl/utils"
-	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -49,19 +47,5 @@ func (h *HHOPublishImage) Publish() {
 
 	cmd := exec.Command("/usr/local/bin/kubectl", "apply", "-f",
 		fmt.Sprintf("/tmp/deployment-%s.yaml", h.config.GetString("app")))
-	stdout, err := cmd.StdoutPipe()
-	cobra.CheckErr(err)
-	cmd.Start()
-
-	reader := bufio.NewReader(stdout)
-
-	for {
-		// 以换行符作为一行结尾
-		line, err := reader.ReadString('\n')
-		if err != nil || io.EOF == err {
-			break
-		}
-		fmt.Print(line)
-	}
-	cmd.Wait()
+	utils.CmdStreamOut(cmd)
 }
