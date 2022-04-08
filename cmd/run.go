@@ -46,6 +46,8 @@ func init() {
 	// and all subcommands, e.g.:
 	// runCmd.PersistentFlags().String("foo", "", "A help for foo")
 	runCmd.PersistentFlags().StringP("env", "e", "", "choose a publish environment")
+	runCmd.PersistentFlags().StringP("id", "i", "", "choose a git commmitid")
+	runCmd.PersistentFlags().StringP("time", "t", "", "choose a timestamp")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:

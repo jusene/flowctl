@@ -9,22 +9,25 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"time"
 )
 
 type HHOPublishImage struct {
 	config    *viper.Viper
 	workSpace string
 	env       string
+	id        string
+	time      string
 }
 
-func NewPublishImage(env string) *HHOPublishImage {
+func NewPublishImage(env, id, time string) *HHOPublishImage {
 	config := utils.LoadYaml()
 	currentPath, _ := filepath.Abs(".")
 	return &HHOPublishImage{
 		config:    config,
 		workSpace: currentPath,
 		env:       env,
+		id:        id,
+		time:      time,
 	}
 }
 
@@ -39,7 +42,8 @@ func (h *HHOPublishImage) Publish() {
 		APP:  h.config.GetString("app"),
 		PROJ: h.config.GetString("proj"),
 		ENV:  h.env,
-		TIME: time.Now().Unix(),
+		TIME: h.time,
+		ID:   h.id,
 	}
 
 	c := utils.NewConsul()

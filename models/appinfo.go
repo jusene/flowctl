@@ -5,5 +5,6 @@ type AppInfo struct {
 	PROJ     string
 	ENV      string
 	RUNNTIME string
-	TIME     int64
+	TIME     string
+	ID       string
 }

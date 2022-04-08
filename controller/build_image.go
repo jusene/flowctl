@@ -23,15 +23,19 @@ type HHOBuildImage struct {
 	config    *viper.Viper
 	workSpace string
 	env       string
+	id        string
+	time      string
 }
 
-func NewHHOBuildImage(env string) *HHOBuildImage {
+func NewHHOBuildImage(env, id, time string) *HHOBuildImage {
 	config := utils.LoadYaml()
 	currentPath, _ := filepath.Abs(".")
 	return &HHOBuildImage{
 		config:    config,
 		workSpace: currentPath,
 		env:       env,
+		id:        id,
+		time:      time,
 	}
 }
 
@@ -134,7 +138,7 @@ func (h *HHOBuildImage) buildImage(app string) {
 	case "static":
 	}
 	cmd := exec.Command("docker", "-H", "tcp://127.0.0.1:2376", "build", "-t",
-		fmt.Sprintf("reg.hho-inc.com/%s-%s/%s:%s", h.config.GetString("proj"), h.env, app, "latest"), ".")
+		fmt.Sprintf("reg.hho-inc.com/%s-%s/%s:%s", h.config.GetString("proj"), h.env, app, h.id+"-"+h.time), ".")
 
 	utils.CmdStreamOut(cmd)
 }
@@ -155,7 +159,7 @@ func (h *HHOBuildImage) pushImage(app string) {
 
 	authStr := base64.URLEncoding.EncodeToString(encodedJSON)
 	out, err := cli.ImagePush(context.Background(), fmt.Sprintf("reg.hho-inc.com/%s-%s/%s:%s",
-		h.config.GetString("proj"), h.env, app, "latest"),
+		h.config.GetString("proj"), h.env, app, h.id+"-"+h.time),
 		types.ImagePushOptions{RegistryAuth: authStr})
 	cobra.CheckErr(err)
 	defer out.Close()

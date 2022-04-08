@@ -35,7 +35,11 @@ var imageCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		env, err := cmd.Flags().GetString("env")
 		cobra.CheckErr(err)
-		build := controller.NewHHOBuildImage(env)
+		id, err := cmd.Flags().GetString("id")
+		cobra.CheckErr(err)
+		time, err := cmd.Flags().GetString("time")
+		cobra.CheckErr(err)
+		build := controller.NewHHOBuildImage(env, id, time)
 		build.Build()
 	},
 }
