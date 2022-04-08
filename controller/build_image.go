@@ -137,11 +137,12 @@ func (h *HHOBuildImage) buildImage(app string) {
 	cmd := exec.Command("docker", "-H", "tcp://127.0.0.1:2376", "build", "-t",
 		fmt.Sprintf("reg.hho-inc.com/%s-%s/%s:%s", h.config.GetString("proj"), h.env, app, "latest"), ".")
 	stdout, err := cmd.StdoutPipe()
+	stderr, err := cmd.StderrPipe()
 	cobra.CheckErr(err)
 	cmd.Start()
 
 	reader := bufio.NewReader(stdout)
-
+    readerErr := bufio.NewReader(stderr)
 	for {
 		// 以换行符作为一行结尾
 		line, err := reader.ReadString('\n')
@@ -150,7 +151,18 @@ func (h *HHOBuildImage) buildImage(app string) {
 		}
 		fmt.Print(line)
 	}
+
+	for {
+		line, err := readerErr.ReadString('\n')
+		if err != nil || io.EOF == err {
+			break
+		}
+		fmt.Print("Error: ", line)
+		os.Exit(2)
+	}
 	cmd.Wait()
+
+
 }
 
 func (h *HHOBuildImage) pushImage(app string) {
