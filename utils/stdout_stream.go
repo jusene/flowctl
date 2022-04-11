@@ -5,10 +5,13 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"io"
+	"os"
 	"os/exec"
+	"strings"
 )
 
 func CmdStreamOut(cmd *exec.Cmd) {
+	errorChan := make(chan string, 10)
 	stdout, err := cmd.StdoutPipe()
 	cobra.CheckErr(err)
 	stderr, err := cmd.StderrPipe()
@@ -25,6 +28,9 @@ func CmdStreamOut(cmd *exec.Cmd) {
 			break
 		}
 		fmt.Print(line)
+		if strings.ContainsAny(strings.ToLower(line), "error") {
+			errorChan <- line
+		}
 	}
 
 	for {
@@ -33,6 +39,17 @@ func CmdStreamOut(cmd *exec.Cmd) {
 			break
 		}
 		fmt.Print("Error: ", line)
+		if strings.ContainsAny(strings.ToLower(line), "error") {
+			errorChan <- line
+		}
 	}
 	cmd.Wait()
+
+	if len(errorChan) != 0 {
+		for msg := range errorChan {
+			fmt.Println(msg)
+		}
+		close(errorChan)
+		os.Exit(2)
+	}
 }
