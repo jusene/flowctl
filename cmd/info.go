@@ -24,7 +24,7 @@ package cmd
 import (
 
 	"github.com/spf13/cobra"
-	"gitlab.hho-inc.com/devops/flowctl/controller"
+	"gitlab.hho-inc.com/devops/flowctl-go/controller"
 )
 
 // infoCmd represents the info command

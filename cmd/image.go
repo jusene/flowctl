@@ -22,7 +22,7 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"gitlab.hho-inc.com/devops/flowctl/controller"
+	"gitlab.hho-inc.com/devops/flowctl-go/controller"
 
 	"github.com/spf13/cobra"
 )

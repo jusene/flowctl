@@ -21,7 +21,7 @@ THE SOFTWARE.
 */
 package main
 
-import "gitlab.hho-inc.com/devops/flowctl/cmd"
+import "gitlab.hho-inc.com/devops/flowctl-go/cmd"
 
 func main() {
 	cmd.Execute()

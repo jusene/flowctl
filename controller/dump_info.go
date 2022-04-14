@@ -2,7 +2,7 @@ package controller
 
 import (
 	"fmt"
-	"gitlab.hho-inc.com/devops/flowctl/utils"
+	"gitlab.hho-inc.com/devops/flowctl-go/utils"
 )
 
 func DumpDeployInfo(env string) {

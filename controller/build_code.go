@@ -3,7 +3,7 @@ package controller
 import (
 	"fmt"
 	"github.com/spf13/viper"
-	"gitlab.hho-inc.com/devops/flowctl/utils"
+	"gitlab.hho-inc.com/devops/flowctl-go/utils"
 	"os"
 	"os/exec"
 	"path/filepath"
