@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/hashicorp/consul/api"
 	"github.com/spf13/cobra"
-	"gitlab.hho-inc.com/devops/flowctl/models"
+	"gitlab.hho-inc.com/devops/flowctl-go/models"
 	"io"
 	"os"
 	"text/template"
