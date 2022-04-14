@@ -1,4 +1,4 @@
-module gitlab.hho-inc.com/devops/flowctl
+module gitlab.hho-inc.com/devops/flowctl-go
 
 go 1.17
 

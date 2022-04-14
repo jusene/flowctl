@@ -11,7 +11,7 @@ import (
 )
 
 func CmdStreamOut(cmd *exec.Cmd) {
-	errorChan := make(chan string, 10)
+	errorChan := make(chan string)
 	stdout, err := cmd.StdoutPipe()
 	cobra.CheckErr(err)
 	stderr, err := cmd.StderrPipe()
@@ -28,9 +28,11 @@ func CmdStreamOut(cmd *exec.Cmd) {
 			break
 		}
 		fmt.Print(line)
-		if strings.ContainsAny(strings.ToLower(line), "error") {
-			errorChan <- line
-		}
+		go func() {
+			if strings.Contains(strings.ToLower(line), "error") {
+				errorChan <- line
+			}
+		}()
 	}
 
 	for {
@@ -39,15 +41,18 @@ func CmdStreamOut(cmd *exec.Cmd) {
 			break
 		}
 		fmt.Print("Error: ", line)
-		if strings.ContainsAny(strings.ToLower(line), "error") {
-			errorChan <- line
-		}
+		go func() {
+			if strings.Contains(strings.ToLower(line), "error") {
+				errorChan <- line
+			}
+		}()
 	}
 	cmd.Wait()
 
 	if len(errorChan) != 0 {
+		fmt.Print("-------------------> 错误详情")
 		for msg := range errorChan {
-			fmt.Println(msg)
+			fmt.Print(msg)
 		}
 		close(errorChan)
 		os.Exit(2)
