@@ -78,6 +78,7 @@ func (h *HHOBuildImage) preJavaBuild(app string) {
 	appInfo := &models.AppInfo{
 		APP:      app,
 		RUNNTIME: h.config.GetString("runningtime"),
+		ENV:      h.env,
 	}
 
 	c.Render2file("/devops/cicd/build/dockerfile", dockerfile, appInfo)

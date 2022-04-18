@@ -20,6 +20,11 @@ func CmdStreamOut(cmd *exec.Cmd) {
 
 	reader := bufio.NewReader(stdout)
 	readerErr := bufio.NewReader(stderr)
+	go func() {
+		msg := <- errorChan
+		fmt.Println(msg)
+		os.Exit(2)
+	}()
 
 	for {
 		// 以换行符作为一行结尾
@@ -48,13 +53,4 @@ func CmdStreamOut(cmd *exec.Cmd) {
 		}()
 	}
 	cmd.Wait()
-
-	if len(errorChan) != 0 {
-		fmt.Print("-------------------> 错误详情")
-		for msg := range errorChan {
-			fmt.Print(msg)
-		}
-		close(errorChan)
-		os.Exit(2)
-	}
 }
