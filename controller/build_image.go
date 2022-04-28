@@ -48,6 +48,9 @@ func (h *HHOBuildImage) Build() {
 		h.preNodeBuild(app)
 	case "static":
 		h.preStaticBuild(app)
+	case "golang":
+		h.preGolangBuild(app)
+		
 	}
 	h.buildImage(app)
 	h.pushImage(app)
@@ -99,6 +102,20 @@ func (h *HHOBuildImage) preNodeBuild(app string) {
 	c.Render2file("/devops/cicd/build/dockerfile", dockerfile, appInfo)
 }
 
+func (h *HHOBuildImage) preGolangBuild(app string) {
+	os.Chdir(h.workSpace)
+	dockerfile, err := os.OpenFile(h.workSpace+"/Dockerfile", os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
+	cobra.CheckErr(err)
+	defer dockerfile.Close()
+
+	c := utils.NewConsul()
+	appInfo := &models.AppInfo{
+		APP:      app,
+		RUNNTIME: h.config.GetString("runningtime"),
+	}
+	c.Render2file("/devops/cicd/build/dockerfile", dockerfile, appInfo)
+}
+
 func (h *HHOBuildImage) preStaticBuild(app string) {
 	os.Chdir(h.workSpace)
 	workDir := strings.Join([]string{h.workSpace, "docker"}, "/")
@@ -137,6 +154,8 @@ func (h *HHOBuildImage) buildImage(app string) {
 	case "java8", "java11", "node":
 		os.Chdir("./docker")
 	case "static":
+	case "golang":
+		
 	}
 	cmd := exec.Command("docker", "-H", "tcp://127.0.0.1:2376", "build", "-t",
 		fmt.Sprintf("reg.hho-inc.com/%s-%s/%s:%s", h.config.GetString("proj"), h.env, app, h.id+"-"+h.time), ".")

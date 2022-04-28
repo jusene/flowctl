@@ -38,8 +38,13 @@ func (h *HHOBuildCode) Build() {
 	case "static":
 		fmt.Println("****** 检测应用是static静态页面 ******")
 		h.buildStatic()
+
+	case "golang":
+		fmt.Println("****** 检测应用是golang应用 ******")
+		h.buildGolang()
+
 	default:
-		fmt.Println("unknown runningtime, please check app.yaml, runningtime must java8, java11, node, static")
+		fmt.Println("unknown runningtime, please check app.yaml, runningtime must java8, java11, node, static, golang")
 		os.Exit(2)
 	}
 }
@@ -63,4 +68,10 @@ func (h *HHOBuildCode) buildStatic() {
 
 	cmd2 := exec.Command("npm", "run", "build")
 	utils.CmdStreamOut(cmd2)
+}
+
+func (h *HHOBuildCode) buildGolang() {
+	os.Chdir(h.workSpace)
+	cmd := exec.Command("go", "build", "-o", h.config.GetString("app"))
+	utils.CmdStreamOut(cmd)
 }

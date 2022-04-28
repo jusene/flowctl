@@ -11,7 +11,7 @@ import (
 )
 
 func CmdStreamOut(cmd *exec.Cmd) {
-	errorChan := make(chan string)
+	errorChan := make(chan string, 1)
 	stdout, err := cmd.StdoutPipe()
 	cobra.CheckErr(err)
 	stderr, err := cmd.StderrPipe()
@@ -45,7 +45,7 @@ func CmdStreamOut(cmd *exec.Cmd) {
 		if err != nil || io.EOF == err {
 			break
 		}
-		fmt.Print("Error: ", line)
+		fmt.Print(".*.*.*.*.*", line)
 		go func() {
 			if strings.Contains(strings.ToLower(line), "error") {
 				errorChan <- line
