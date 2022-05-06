@@ -44,6 +44,7 @@ func (h *HHOPublishImage) Publish() {
 		ENV:  h.env,
 		TIME: h.time,
 		ID:   h.id,
+		RUNNTIME: h.config.GetString("runningtime"),
 	}
 
 	c := utils.NewConsul()
