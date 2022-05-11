@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"io"
-	"os"
 	"os/exec"
 	"strings"
 )
@@ -20,11 +19,11 @@ func CmdStreamOut(cmd *exec.Cmd) {
 
 	reader := bufio.NewReader(stdout)
 	readerErr := bufio.NewReader(stderr)
-	go func() {
-		msg := <- errorChan
-		fmt.Println(msg)
-		os.Exit(2)
-	}()
+	//go func() {
+	//	msg := <- errorChan
+	//	fmt.Println(msg)
+	//	os.Exit(2)
+	//}()
 
 	for {
 		// 以换行符作为一行结尾
