@@ -17,9 +17,10 @@ type HHOPublishImage struct {
 	env       string
 	id        string
 	time      string
+	debug     bool
 }
 
-func NewPublishImage(env, id, time string) *HHOPublishImage {
+func NewPublishImage(env, id, time string, debug bool) *HHOPublishImage {
 	config := utils.LoadYaml()
 	currentPath, _ := filepath.Abs(".")
 	return &HHOPublishImage{
@@ -28,6 +29,7 @@ func NewPublishImage(env, id, time string) *HHOPublishImage {
 		env:       env,
 		id:        id,
 		time:      time,
+		debug:     debug,
 	}
 }
 
@@ -45,6 +47,7 @@ func (h *HHOPublishImage) Publish() {
 		TIME: h.time,
 		ID:   h.id,
 		RUNNTIME: h.config.GetString("runningtime"),
+		DEBUG: h.debug,
 	}
 
 	c := utils.NewConsul()

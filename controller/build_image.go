@@ -50,7 +50,6 @@ func (h *HHOBuildImage) Build() {
 		h.preStaticBuild(app)
 	case "golang":
 		h.preGolangBuild(app)
-		
 	}
 	h.buildImage(app)
 	h.pushImage(app)
@@ -82,6 +81,7 @@ func (h *HHOBuildImage) preJavaBuild(app string) {
 		APP:      app,
 		RUNNTIME: h.config.GetString("runningtime"),
 		ENV:      h.env,
+		DEBPACK:   h.config.GetString("debpack"),
 	}
 
 	c.Render2file("/devops/cicd/build/dockerfile", dockerfile, appInfo)
@@ -98,6 +98,7 @@ func (h *HHOBuildImage) preNodeBuild(app string) {
 	appInfo := &models.AppInfo{
 		APP:      app,
 		RUNNTIME: h.config.GetString("runningtime"),
+		DEBPACK:   h.config.GetString("debpack"),
 	}
 	c.Render2file("/devops/cicd/build/dockerfile", dockerfile, appInfo)
 }
@@ -112,6 +113,7 @@ func (h *HHOBuildImage) preGolangBuild(app string) {
 	appInfo := &models.AppInfo{
 		APP:      app,
 		RUNNTIME: h.config.GetString("runningtime"),
+		DEBPACK:   h.config.GetString("debpack"),
 	}
 	c.Render2file("/devops/cicd/build/dockerfile", dockerfile, appInfo)
 }
@@ -144,6 +146,7 @@ func (h *HHOBuildImage) preStaticBuild(app string) {
 	appInfo := &models.AppInfo{
 		APP:      app,
 		RUNNTIME: h.config.GetString("runningtime"),
+		DEBPACK:   h.config.GetString("debpack"),
 	}
 	c.Render2file("/devops/cicd/build/dockerfile", dockerfile, appInfo)
 }

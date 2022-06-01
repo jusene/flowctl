@@ -51,7 +51,7 @@ func (h *HHOBuildCode) Build() {
 
 func (h *HHOBuildCode) buildJava() {
 	os.Chdir(h.workSpace)
-	cmd := exec.Command("mvn", "-B", "clean", "package", "-Dmaven.test.skip=true")
+	cmd := exec.Command("mvn", "-B", "-U", "clean", "package", "-Dmaven.test.skip=true")
 	utils.CmdStreamOut(cmd)
 }
 
