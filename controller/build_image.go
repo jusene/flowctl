@@ -14,7 +14,6 @@ import (
 	"io"
 	"io/fs"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 )
@@ -160,10 +159,8 @@ func (h *HHOBuildImage) buildImage(app string) {
 	case "golang":
 		
 	}
-	cmd := exec.Command("docker", "-H", "tcp://127.0.0.1:2376", "build", "-t",
-		fmt.Sprintf("reg.hho-inc.com/%s-%s/%s:%s", h.config.GetString("proj"), h.env, app, h.id+"-"+h.time), ".")
-
-	utils.CmdStreamOut(cmd)
+	utils.CmdStreamOut("docker -H tcp://127.0.0.1:2376 build -t "+
+		fmt.Sprintf("reg.hho-inc.com/%s-%s/%s:%s", h.config.GetString("proj"), h.env, app, h.id+"-"+h.time) + " .")
 }
 
 func (h *HHOBuildImage) pushImage(app string) {

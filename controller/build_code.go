@@ -5,7 +5,6 @@ import (
 	"github.com/spf13/viper"
 	"gitlab.hho-inc.com/devops/flowctl-go/utils"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 )
@@ -51,27 +50,22 @@ func (h *HHOBuildCode) Build() {
 
 func (h *HHOBuildCode) buildJava() {
 	os.Chdir(h.workSpace)
-	cmd := exec.Command("mvn", "-B", "-U", "clean", "package", "-Dmaven.test.skip=true")
-	utils.CmdStreamOut(cmd)
+	utils.CmdStreamOut("mvn -B -U clean package -Dmaven.test.skip=true")
 }
 
 func (h *HHOBuildCode) buildNode() {
 	os.Chdir(h.workSpace)
-	cmd := exec.Command("npm", "install")
-	utils.CmdStreamOut(cmd)
+	utils.CmdStreamOut("npm install")
 }
 
 func (h *HHOBuildCode) buildStatic() {
 	os.Chdir(h.workSpace)
-	cmd := exec.Command("npm", "install")
-	utils.CmdStreamOut(cmd)
+	utils.CmdStreamOut("npm install")
 
-	cmd2 := exec.Command("npm", "run", "build")
-	utils.CmdStreamOut(cmd2)
+	utils.CmdStreamOut("npm run build")
 }
 
 func (h *HHOBuildCode) buildGolang() {
 	os.Chdir(h.workSpace)
-	cmd := exec.Command("go", "build", "-o", h.config.GetString("app"))
-	utils.CmdStreamOut(cmd)
+	utils.CmdStreamOut("go build -o " + h.config.GetString("app"))
 }

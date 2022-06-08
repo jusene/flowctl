@@ -7,7 +7,6 @@ import (
 	"gitlab.hho-inc.com/devops/flowctl-go/models"
 	"gitlab.hho-inc.com/devops/flowctl-go/utils"
 	"os"
-	"os/exec"
 	"path/filepath"
 )
 
@@ -17,10 +16,10 @@ type HHOPublishImage struct {
 	env       string
 	id        string
 	time      string
-	debug     bool
+	debug     string
 }
 
-func NewPublishImage(env, id, time string, debug bool) *HHOPublishImage {
+func NewPublishImage(env, id, time, debug string) *HHOPublishImage {
 	config := utils.LoadYaml()
 	currentPath, _ := filepath.Abs(".")
 	return &HHOPublishImage{
@@ -53,7 +52,6 @@ func (h *HHOPublishImage) Publish() {
 	c := utils.NewConsul()
 	c.Render2file("/devops/cicd/build/deployment.yaml", deployment, appInfo)
 
-	cmd := exec.Command("/usr/local/bin/kubectl", "apply", "-f",
+	utils.CmdStreamOut("/usr/local/bin/kubectl apply -f "+
 		fmt.Sprintf("/tmp/deployment-%s.yaml", h.config.GetString("app")))
-	utils.CmdStreamOut(cmd)
 }

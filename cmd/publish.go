@@ -39,7 +39,7 @@ var publishCmd = &cobra.Command{
 		cobra.CheckErr(err)
 		time, err := cmd.Flags().GetString("time")
 		cobra.CheckErr(err)
-		debug, err := cmd.Flags().GetBool("debug")
+		debug, err := cmd.Flags().GetString("debug")
 		cobra.CheckErr(err)
 		build := controller.NewPublishImage(env, id, time, debug)
 		build.Publish()
@@ -54,7 +54,7 @@ func init() {
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
 	// publishCmd.PersistentFlags().String("foo", "", "A help for foo")
-	publishCmd.PersistentFlags().BoolP("debug", "d", false, "change debug mode")
+	publishCmd.PersistentFlags().StringP("debug", "d", "false", "change debug mode")
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// publishCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")

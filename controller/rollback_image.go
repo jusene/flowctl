@@ -3,7 +3,6 @@ package controller
 import (
 	"fmt"
 	"gitlab.hho-inc.com/devops/flowctl-go/utils"
-	"os/exec"
 	"strings"
 )
 
@@ -23,8 +22,6 @@ func RollbackImage(env string) {
 
 
 func rollback(app, proj, env string) {
-	cmd := exec.Command("kubectl", "rollout", "undo", "deployment", app, "-n", fmt.Sprintf("%s-%s", proj, env))
-
-	utils.CmdStreamOut(cmd)
+	utils.CmdStreamOut("kubectl rollout undo deployment " + app +" -n " + fmt.Sprintf("%s-%s", proj, env))
 }
 

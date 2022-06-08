@@ -10,7 +10,7 @@ type AppInfo struct {
 	TIME     string
 	ID       string
 	DEBPACK  string
-	DEBUG    bool
+	DEBUG    string
 }
 
 func (a *AppInfo) DebSplit(debpkg string) string {

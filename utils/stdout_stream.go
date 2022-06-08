@@ -2,54 +2,60 @@ package utils
 
 import (
 	"bufio"
+	"context"
 	"fmt"
-	"github.com/spf13/cobra"
 	"io"
+	"os"
 	"os/exec"
-	"strings"
+	"sync"
 )
 
-func CmdStreamOut(cmd *exec.Cmd) {
-	errorChan := make(chan string, 1)
-	stdout, err := cmd.StdoutPipe()
-	cobra.CheckErr(err)
-	stderr, err := cmd.StderrPipe()
-	cobra.CheckErr(err)
-	cmd.Start()
+func CmdStreamOut(cmd string) {
+	ctx, cancel := context.WithCancel(context.Background())
+	if err := Command(ctx, cmd); err != nil {
+		fmt.Print(err.Error())
+		cancel()
+		os.Exit(2)
+	}
+}
 
-	reader := bufio.NewReader(stdout)
-	readerErr := bufio.NewReader(stderr)
-	//go func() {
-	//	msg := <- errorChan
-	//	fmt.Println(msg)
-	//	os.Exit(2)
-	//}()
-
-	for {
-		// 以换行符作为一行结尾
-		line, err := reader.ReadString('\n')
-		if err != nil || io.EOF == err {
-			break
-		}
-		fmt.Print(line)
-		go func() {
-			if strings.Contains(strings.ToLower(line), "error") {
-				errorChan <- line
-			}
-		}()
+func Command(ctx context.Context, cmd string) error {
+	c := exec.CommandContext(ctx, "bash", "-c", cmd)
+	stdout, err := c.StdoutPipe()
+	if err != nil {
+		return err
 	}
 
-	for {
-		line, err := readerErr.ReadString('\n')
-		if err != nil || io.EOF == err {
-			break
-		}
-		fmt.Print(".*.*.*.*.*", line)
-		go func() {
-			if strings.Contains(strings.ToLower(line), "error") {
-				errorChan <- line
-			}
-		}()
+	stderr, err := c.StderrPipe()
+	if err != nil {
+		return err
 	}
-	cmd.Wait()
+
+	var wg sync.WaitGroup
+
+	wg.Add(2)
+
+	go read(ctx, &wg, stderr)
+	go read(ctx, &wg, stdout)
+
+	err = c.Start()
+	wg.Wait()
+	return err
+}
+
+func read(ctx context.Context, wg *sync.WaitGroup, std io.ReadCloser) {
+	reader := bufio.NewReader(std)
+	defer wg.Done()
+	for {
+		select {
+		case <- ctx.Done():
+			return
+		default:
+			readString, err := reader.ReadString('\n')
+			if err != nil || err == io.EOF {
+				return
+			}
+			fmt.Print(readString)
+		}
+	}
 }
