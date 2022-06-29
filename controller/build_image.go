@@ -61,9 +61,19 @@ func (h *HHOBuildImage) preJavaBuild(app string) {
 		fmt.Fprintf(os.Stderr, "创建%s目录失败", strings.Join([]string{h.workSpace, "docker"}, "/"))
 	}
 
+	var jarPath = strings.Join([]string{h.workSpace, app + ".starter", "target", app + ".jar"}, "/")
+	if h.config.GetString("jarpath") != "" {
+		jarPath = strings.Join([]string{h.workSpace, strings.Trim(h.config.GetString("jarpath"), "/")}, "/")
+	}
+
+	if _, err := os.Stat(jarPath); os.IsNotExist(err) {
+		fmt.Fprintf(os.Stderr, "%s jar包不存在，请检查生成jar包规则路径...", strings.Join([]string{h.workSpace, app + ".starter", "target", app + ".jar"}, "/"))
+		os.Exit(2)
+	}
+
 	destFile, _ := os.Create(strings.Join([]string{workDir, app + ".jar"}, "/"))
 	defer destFile.Close()
-	srcFile, _ := os.Open(strings.Join([]string{h.workSpace, app + ".starter", "target", app + ".jar"}, "/"))
+	srcFile, _ := os.Open(jarPath)
 	defer srcFile.Close()
 	io.Copy(destFile, srcFile)
 
@@ -98,6 +108,7 @@ func (h *HHOBuildImage) preNodeBuild(app string) {
 		APP:      app,
 		RUNNTIME: h.config.GetString("runningtime"),
 		DEBPACK:   h.config.GetString("debpack"),
+		ENV:      h.env,
 	}
 	c.Render2file("/devops/cicd/build/dockerfile", dockerfile, appInfo)
 }
@@ -113,6 +124,7 @@ func (h *HHOBuildImage) preGolangBuild(app string) {
 		APP:      app,
 		RUNNTIME: h.config.GetString("runningtime"),
 		DEBPACK:   h.config.GetString("debpack"),
+		ENV:      h.env,
 	}
 	c.Render2file("/devops/cicd/build/dockerfile", dockerfile, appInfo)
 }
@@ -159,7 +171,7 @@ func (h *HHOBuildImage) buildImage(app string) {
 	case "golang":
 		
 	}
-	utils.CmdStreamOut("docker -H tcp://127.0.0.1:2376 build -t "+
+	utils.CmdStreamWithErr("docker -H tcp://127.0.0.1:2376 build -t "+
 		fmt.Sprintf("reg.hho-inc.com/%s-%s/%s:%s", h.config.GetString("proj"), h.env, app, h.id+"-"+h.time) + " .")
 }
 

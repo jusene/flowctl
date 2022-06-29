@@ -52,6 +52,6 @@ func (h *HHOPublishImage) Publish() {
 	c := utils.NewConsul()
 	c.Render2file("/devops/cicd/build/deployment.yaml", deployment, appInfo)
 
-	utils.CmdStreamOut("/usr/local/bin/kubectl apply -f "+
+	utils.CmdStreamWithErr("/usr/local/bin/kubectl apply -f "+
 		fmt.Sprintf("/tmp/deployment-%s.yaml", h.config.GetString("app")))
 }
