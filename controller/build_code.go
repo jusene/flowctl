@@ -56,6 +56,9 @@ func (h *HHOBuildCode) buildJava() {
 func (h *HHOBuildCode) buildNode() {
 	os.Chdir(h.workSpace)
 	utils.CmdStreamOut("npm install")
+	if h.config.GetBool("nodebuild") {
+		utils.CmdStreamOut("npm run build")
+	}
 }
 
 func (h *HHOBuildCode) buildStatic() {

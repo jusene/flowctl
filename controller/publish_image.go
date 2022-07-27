@@ -34,8 +34,8 @@ func NewPublishImage(env, id, time, debug string) *HHOPublishImage {
 
 func (h *HHOPublishImage) Publish() {
 	os.MkdirAll("/tmp/deploy", 0755)
-	deployment, err := os.OpenFile(fmt.Sprintf("/tmp/deployment-%s.yaml",
-		h.config.GetString("app")), os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
+	deployment, err := os.OpenFile(fmt.Sprintf("/tmp/deploy/deployment-%s-%s.yaml",
+		h.config.GetString("app"), h.env), os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
 	cobra.CheckErr(err)
 	defer deployment.Close()
 
@@ -52,6 +52,10 @@ func (h *HHOPublishImage) Publish() {
 	c := utils.NewConsul()
 	c.Render2file("/devops/cicd/build/deployment.yaml", deployment, appInfo)
 
-	utils.CmdStreamWithErr("/usr/local/bin/kubectl apply -f "+
-		fmt.Sprintf("/tmp/deployment-%s.yaml", h.config.GetString("app")))
+	if( h.env == "prod" ) {
+		utils.CmdStreamWithErr("export KUBECONFIG=/home/hhoroot/.kube/ack_config; /usr/local/bin/kubectl apply -f " +fmt.Sprintf("/tmp/deploy/deployment-%s-%s.yaml", h.config.GetString("app"), h.env))
+	} else {
+		utils.CmdStreamWithErr("/usr/local/bin/kubectl apply -f " +
+			fmt.Sprintf("/tmp/deploy/deployment-%s-%s.yaml", h.config.GetString("app"), h.env))
+	}
 }

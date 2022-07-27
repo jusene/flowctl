@@ -120,7 +120,13 @@ func readWithErr(ctx context.Context, wg *sync.WaitGroup, std io.ReadCloser, err
 			}
 			fmt.Print(readString)
 			go func(readString string) {
-				if strings.Contains(strings.ToLower(readString), "error") {
+				if strings.Contains(strings.ToLower(readString), "error") && ! strings.Contains(readString, "GPG") {
+						errChan <- readString
+				}
+			}(readString)
+			go func(readString string) {
+				if strings.Contains(strings.ToLower(readString), "invalid") ||
+					strings.Contains(strings.ToLower(readString), "failed"){
 					errChan <- readString
 				}
 			}(readString)

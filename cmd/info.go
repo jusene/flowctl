@@ -35,7 +35,15 @@ var infoCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		env, err := cmd.Flags().GetString("env")
 		cobra.CheckErr(err)
-		controller.DumpDeployInfo(env)
+		commit, err := cmd.Flags().GetString("id")
+		cobra.CheckErr(err)
+		time, err := cmd.Flags().GetString("time")
+		cobra.CheckErr(err)
+		git, err := cmd.Flags().GetString("git")
+		cobra.CheckErr(err)
+		branch, err := cmd.Flags().GetString("branch")
+		cobra.CheckErr(err)
+		controller.DumpDeployInfo(env, commit, time, git, branch)
 	},
 }
 
